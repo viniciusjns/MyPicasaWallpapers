@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Google Username"/>
+
+    <EditText
+        android:id="@+id/et_google_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Number of Columns"/>
+
+    <EditText
+        android:id="@+id/et_number_columns"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/btn_save_settings"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="Salvar Configurações"
+        android:background="@color/colorPrimary"
+        android:textColor="#fff"
+        android:padding="8dp"/>
+
+    <Button
+        android:id="@+id/btn_cancel_settings"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="Cancelar"
+        android:background="@color/colorPrimary"
+        android:textColor="#fff"
+        android:padding="8dp"
+        android:layout_marginTop="5dp"/>
+
+</LinearLayout>
