@@ -102,4 +102,9 @@ public class SettingsFragment extends DialogFragment {
 
     }
 
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
+
 }

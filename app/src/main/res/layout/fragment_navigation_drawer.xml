@@ -15,7 +15,7 @@
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:scaleType="fitXY"
-            android:src="@drawable/material_design_wallpaper"/>
+            android:src="@drawable/nav_drawer_header2"/>
 
     </RelativeLayout>
 

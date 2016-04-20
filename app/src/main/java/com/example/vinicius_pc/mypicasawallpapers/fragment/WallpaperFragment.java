@@ -1,12 +1,16 @@
 package com.example.vinicius_pc.mypicasawallpapers.fragment;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Movie;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.vinicius_pc.mypicasawallpapers.R;
+import com.example.vinicius_pc.mypicasawallpapers.activity.WallpaperDetailActivity;
 import com.example.vinicius_pc.mypicasawallpapers.adapter.NavigationDrawerAdapter;
 import com.example.vinicius_pc.mypicasawallpapers.adapter.WallpaperAdapter;
 import com.example.vinicius_pc.mypicasawallpapers.controller.AppController;
@@ -37,6 +42,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,8 +60,6 @@ public class WallpaperFragment extends Fragment {
     private ProgressDialog pDialog;
     private PrefManager pref;
 
-    //private static WallpaperFragment wallpaperFragment;
-
     public WallpaperFragment() {
         // Required empty public constructor
     }
@@ -70,8 +74,8 @@ public class WallpaperFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_wallpaper, container, false);
-        pref = new PrefManager(getContext());
 
+        initVariables();
         getParams();
         setupProgressDialog();
         //setupRecyclerView(wallpapers);
@@ -80,13 +84,17 @@ public class WallpaperFragment extends Fragment {
         return view;
     }
 
+    private void initVariables() {
+        pref = new PrefManager(getContext());
+    }
+
     private void getParams() {
         Bundle bundle = getArguments();
         String idAlbum = bundle.getString("idAlbum");
         url = AppConst.URL_ALBUM_PHOTOS.replace("_GOOGLE_USERNAME_", pref.getGoogleUserName()).replace("_ALBUM_ID_", idAlbum);
     }
 
-    private void setupRecyclerView(View view, List<Wallpaper> wallpapers) {
+    private void setupRecyclerView(View view, final List<Wallpaper> wallpapers) {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
@@ -94,15 +102,26 @@ public class WallpaperFragment extends Fragment {
         wallpaperAdapter = new WallpaperAdapter(getContext(), wallpapers, new WallpaperAdapter.WallpaperOnItemClickListener() {
             @Override
             public void onClickWallpaper(View view, int position, ImageView imageView) {
-                Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-                Utils utils = new Utils(getContext());
-                utils.setAsWallpaper(bitmap);
-
+                Wallpaper wallpaper = wallpapers.get(position);
+                initWallpaperDetailActivityWithSharedAnimation(wallpaper, imageView);
             }
         });
         mRecyclerView.setAdapter(wallpaperAdapter);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+    }
+
+    private void initWallpaperDetailActivityWithSharedAnimation(Wallpaper wallpaper, ImageView imgThumb) {
+        Pair[] pairs = new Pair[1];
+        pairs[0] = new Pair<View, String>(imgThumb, "imgPoster");
+
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), pairs);
+
+        Intent intent = new Intent(getContext(), WallpaperDetailActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("wallpaper", wallpaper);
+        intent.putExtras(bundle);
+        startActivity(intent, options.toBundle());
     }
 
     private void setupProgressDialog() {
@@ -154,23 +173,23 @@ public class WallpaperFragment extends Fragment {
 
                             String url = mediaObj.getString(AppConst.TAG_IMG_URL);
 
-                            /*String photoJson = photoObj.getJSONObject(AppConst.TAG_ID).getString(AppConst.TAG_T) + "&imgmax=d";
+                            /*String photoJson = photoObj.getJSONObject(AppConst.TAG_ID).getString(AppConst.TAG_T) + "&imgmax=d";*/
 
                             int width = mediaObj.getInt(AppConst.TAG_IMG_WIDTH);
-                            int height = mediaObj.getInt(AppConst.TAG_IMG_HEIGHT);*/
+                            int height = mediaObj.getInt(AppConst.TAG_IMG_HEIGHT);
 
-                            String descriptionContent = photoObj
+                            String description = photoObj
                                     .getJSONObject(AppConst.TAG_MEDIA_GROUP)
                                     .getJSONObject(AppConst.TAG_MEDIA_DESCRIPTION)
                                     .getString(AppConst.TAG_T).toString();
 
-                            Wallpaper p = new Wallpaper(url, descriptionContent);
+                            Wallpaper p = new Wallpaper(url, (description.compareTo("") != 0) ? description : "Wallpaper " + (i + 1));
 
                             // Adding the photo to list data set
                             photosList.add(p);
                             hideProgressDialog();
 
-                            Log.d(TAG, "Photo: " + url);
+                            Log.d(TAG, "Photo: " + url + " w: " + width + " h: " + height);
                         }
                     }
 

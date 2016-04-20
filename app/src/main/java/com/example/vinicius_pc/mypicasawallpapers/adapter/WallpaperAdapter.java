@@ -77,7 +77,7 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.MyVi
                      .use(PicassoPalette.Profile.VIBRANT)
                         .intoBackground(holder.legenda, PicassoPalette.Swatch.RGB));
 
-        holder.tvTitle.setText((description.compareTo("") != 0) ? description : "Wallpaper " + (position + 1));
+        holder.tvTitle.setText(description);
     }
 
     @Override
